@@ -1,0 +1,8 @@
+cz/magio/magioenigma/listeners/VillagerSecurityListener.class
+cz/magio/magioenigma/managers/VillagerSecurityManager.class
+cz/magio/magioenigma/tasks/VillagerSecurityTask.class
+cz/magio/magioenigma/managers/ItemSecurityManager.class
+cz/magio/magioenigma/tasks/BannedItemTask.class
+cz/magio/magioenigma/listeners/BannedItemListener.class
+cz/magio/magioenigma/MagioEnigma.class
+cz/magio/magioenigma/commands/MagioEnigmaCommand.class

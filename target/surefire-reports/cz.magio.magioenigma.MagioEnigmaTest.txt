@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: cz.magio.magioenigma.MagioEnigmaTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.785 s -- in cz.magio.magioenigma.MagioEnigmaTest

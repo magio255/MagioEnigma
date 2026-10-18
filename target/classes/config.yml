@@ -1,0 +1,29 @@
+# MagioEnigma Config Configuration
+
+# List of banned item material names (in uppercase Bukkit Material enum names)
+banned-items:
+  - BEDROCK
+  - BARRIER
+  - COMMAND_BLOCK
+  - CHAIN_COMMAND_BLOCK
+  - REPEATING_COMMAND_BLOCK
+  - COMMAND_BLOCK_MINECART
+  - STRUCTURE_BLOCK
+  - STRUCTURE_VOID
+  - JIGSAW
+  - DEBUG_STICK
+  - LIGHT
+
+# Options for Banned Items enforcement on non-OP players
+banned-items-settings:
+  enabled: true
+  check-interval-ticks: 20
+  notify-player: true
+  notification-message: "&c[MagioEnigma] Zakazany predmet (%item%) byl odstranen z tveho inventare!"
+
+# Options for Villager Security enforcement
+villager-security-settings:
+  enabled: true
+  check-interval-ticks: 100
+  log-removal: true
+  log-message: "&c[MagioEnigma] Nelegalni villager s zakazanymi obchody byl vymazan na souradnicich: %location%"

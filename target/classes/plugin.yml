@@ -1,0 +1,19 @@
+name: MagioEnigma
+version: '1.0.0'
+main: cz.magio.magioenigma.MagioEnigma
+api-version: '1.20'
+author: Magio
+description: Security plugin checking banned items and illegal villager trades.
+commands:
+  magioenigma:
+    description: Main command for MagioEnigma plugin
+    usage: /<command> [reload]
+    permission: magioenigma.admin
+    permission-message: Nemas opravneni k pouziti tohoto prikazu!
+permissions:
+  magioenigma.admin:
+    description: Allows administrative actions like reloading MagioEnigma config
+    default: op
+  magioenigma.bypass:
+    description: Allows player to bypass banned item checks even if not OP
+    default: op
