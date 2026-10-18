@@ -4,6 +4,7 @@ import cz.magio.magioenigma.MagioEnigma;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -91,6 +92,40 @@ public class ItemSecurityManager {
             String itemsStr = String.join(", ", removedItemNames);
             msg = msg.replace("%item%", itemsStr);
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
+        }
+
+        return removedAny;
+    }
+
+    public boolean checkAndSanitizeContainerInventory(Inventory inventory, Player triggerPlayer) {
+        if (inventory == null) return false;
+        if (!plugin.getConfig().getBoolean("banned-items-settings.enabled", true)) {
+            return false;
+        }
+
+        if (triggerPlayer != null && shouldBypass(triggerPlayer)) {
+            return false;
+        }
+
+        boolean removedAny = false;
+        Set<String> removedItemNames = new HashSet<>();
+
+        ItemStack[] contents = inventory.getContents();
+        for (int i = 0; i < contents.length; i++) {
+            ItemStack item = contents[i];
+            if (isBannedItem(item)) {
+                removedItemNames.add(item.getType().name());
+                inventory.setItem(i, null);
+                removedAny = true;
+            }
+        }
+
+        if (removedAny && triggerPlayer != null && plugin.getConfig().getBoolean("banned-items-settings.notify-player", true)) {
+            String msg = plugin.getConfig().getString("banned-items-settings.notification-message",
+                    "&c[MagioEnigma] Zakazany predmet (%item%) byl odstranen z tveho inventare!");
+            String itemsStr = String.join(", ", removedItemNames);
+            msg = msg.replace("%item%", itemsStr);
+            triggerPlayer.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
         }
 
         return removedAny;

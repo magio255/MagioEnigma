@@ -10,6 +10,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.AbstractVillager;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.inventory.PlayerInventory;
@@ -100,6 +101,27 @@ class MagioEnigmaTest {
         assertTrue(sanitized);
         verify(inv).setItem(1, null);
         verify(player).sendMessage(contains("BEDROCK"));
+    }
+
+    @Test
+    void testContainerSanitization() {
+        Player player = mock(Player.class);
+        Inventory containerInv = mock(Inventory.class);
+
+        when(player.isOp()).thenReturn(false);
+        when(player.hasPermission("magioenigma.bypass")).thenReturn(false);
+
+        ItemStack barrierItem = new ItemStack(Material.BARRIER);
+        ItemStack dirtItem = new ItemStack(Material.DIRT);
+        ItemStack[] contents = new ItemStack[]{ dirtItem, barrierItem };
+
+        when(containerInv.getContents()).thenReturn(contents);
+
+        boolean sanitized = itemManager.checkAndSanitizeContainerInventory(containerInv, player);
+
+        assertTrue(sanitized);
+        verify(containerInv).setItem(1, null);
+        verify(player).sendMessage(contains("BARRIER"));
     }
 
     @Test

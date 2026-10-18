@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -35,6 +36,20 @@ public class BannedItemListener implements Listener {
                 largeStackManager.checkAndEnforcePlayer(event.getPlayer());
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onInventoryOpen(InventoryOpenEvent event) {
+        if (!(event.getPlayer() instanceof Player player)) {
+            return;
+        }
+
+        if (itemManager.shouldBypass(player)) {
+            return;
+        }
+
+        itemManager.checkAndSanitizeContainerInventory(event.getInventory(), player);
+        itemManager.checkAndSanitizePlayer(player);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -70,12 +85,19 @@ public class BannedItemListener implements Listener {
             return;
         }
 
+        if (event.getClickedInventory() != null) {
+            itemManager.checkAndSanitizeContainerInventory(event.getClickedInventory(), player);
+        }
+
         boolean currentBanned = itemManager.isBannedItem(event.getCurrentItem());
         boolean cursorBanned = itemManager.isBannedItem(event.getCursor());
 
         if (currentBanned || cursorBanned) {
             event.setCancelled(true);
             itemManager.checkAndSanitizePlayer(player);
+            if (event.getClickedInventory() != null) {
+                itemManager.checkAndSanitizeContainerInventory(event.getClickedInventory(), player);
+            }
             return;
         }
 
