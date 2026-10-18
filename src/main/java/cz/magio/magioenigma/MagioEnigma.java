@@ -4,6 +4,7 @@ import cz.magio.magioenigma.commands.MagioEnigmaCommand;
 import cz.magio.magioenigma.listeners.BannedItemListener;
 import cz.magio.magioenigma.listeners.VillagerSecurityListener;
 import cz.magio.magioenigma.managers.ItemSecurityManager;
+import cz.magio.magioenigma.managers.LargeStackSecurityManager;
 import cz.magio.magioenigma.managers.VillagerSecurityManager;
 import cz.magio.magioenigma.tasks.BannedItemTask;
 import cz.magio.magioenigma.tasks.VillagerSecurityTask;
@@ -13,6 +14,7 @@ import org.bukkit.scheduler.BukkitTask;
 public class MagioEnigma extends JavaPlugin {
 
     private ItemSecurityManager itemSecurityManager;
+    private LargeStackSecurityManager largeStackSecurityManager;
     private VillagerSecurityManager villagerSecurityManager;
 
     private BukkitTask itemTask;
@@ -23,10 +25,11 @@ public class MagioEnigma extends JavaPlugin {
         saveDefaultConfig();
 
         this.itemSecurityManager = new ItemSecurityManager(this);
+        this.largeStackSecurityManager = new LargeStackSecurityManager(this, itemSecurityManager);
         this.villagerSecurityManager = new VillagerSecurityManager(this, itemSecurityManager);
 
         // Register listeners
-        getServer().getPluginManager().registerEvents(new BannedItemListener(this, itemSecurityManager), this);
+        getServer().getPluginManager().registerEvents(new BannedItemListener(this, itemSecurityManager, largeStackSecurityManager), this);
         getServer().getPluginManager().registerEvents(new VillagerSecurityListener(this, villagerSecurityManager), this);
 
         // Register commands
@@ -53,6 +56,9 @@ public class MagioEnigma extends JavaPlugin {
         if (itemSecurityManager != null) {
             itemSecurityManager.reloadConfig();
         }
+        if (largeStackSecurityManager != null) {
+            largeStackSecurityManager.reloadConfig();
+        }
         stopTasks();
         startTasks();
     }
@@ -60,7 +66,7 @@ public class MagioEnigma extends JavaPlugin {
     private void startTasks() {
         long itemInterval = getConfig().getLong("banned-items-settings.check-interval-ticks", 20L);
         if (itemInterval > 0) {
-            itemTask = new BannedItemTask(this, itemSecurityManager)
+            itemTask = new BannedItemTask(this, itemSecurityManager, largeStackSecurityManager)
                     .runTaskTimer(this, itemInterval, itemInterval);
         }
 
@@ -84,6 +90,10 @@ public class MagioEnigma extends JavaPlugin {
 
     public ItemSecurityManager getItemSecurityManager() {
         return itemSecurityManager;
+    }
+
+    public LargeStackSecurityManager getLargeStackSecurityManager() {
+        return largeStackSecurityManager;
     }
 
     public VillagerSecurityManager getVillagerSecurityManager() {

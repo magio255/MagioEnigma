@@ -27,3 +27,23 @@ villager-security-settings:
   check-interval-ticks: 100
   log-removal: true
   log-message: "&c[MagioEnigma] Nelegalni villager s zakazanymi obchody byl vymazan na souradnicich: %location%"
+
+# Options for Large Stack Detection
+large-stack-settings:
+  enabled: true
+  # Number of inventory slots filled with monitored valuable items before triggering an instant ban
+  slot-threshold: 20
+  # List of valuable materials to monitor
+  monitored-items:
+    - NETHERITE_INGOT
+    - NETHERITE_BLOCK
+    - DIAMOND_BLOCK
+    - NETHERITE_SCRAP
+    - ANCIENT_DEBRIS
+    - DIAMOND
+    - EMERALD_BLOCK
+    - GOLD_BLOCK
+  # Console command executed to ban the player
+  ban-command: "ban %player% [MagioEnigma] Detekovano nelegalni mnozstvi cennosti (%count% slotu %items%)"
+  broadcast: true
+  broadcast-message: "&c[MagioEnigma] Hrac %player% byl zabanovan za Large Stack Detection (%count% slotu %items%)."

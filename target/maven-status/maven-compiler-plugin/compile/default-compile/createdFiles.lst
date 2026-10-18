@@ -6,3 +6,4 @@ cz/magio/magioenigma/tasks/BannedItemTask.class
 cz/magio/magioenigma/listeners/BannedItemListener.class
 cz/magio/magioenigma/MagioEnigma.class
 cz/magio/magioenigma/commands/MagioEnigmaCommand.class
+cz/magio/magioenigma/managers/LargeStackSecurityManager.class

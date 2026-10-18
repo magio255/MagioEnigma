@@ -2,7 +2,7 @@ package cz.magio.magioenigma.listeners;
 
 import cz.magio.magioenigma.MagioEnigma;
 import cz.magio.magioenigma.managers.ItemSecurityManager;
-import org.bukkit.entity.Entity;
+import cz.magio.magioenigma.managers.LargeStackSecurityManager;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,15 +20,21 @@ public class BannedItemListener implements Listener {
 
     private final MagioEnigma plugin;
     private final ItemSecurityManager itemManager;
+    private final LargeStackSecurityManager largeStackManager;
 
-    public BannedItemListener(MagioEnigma plugin, ItemSecurityManager itemManager) {
+    public BannedItemListener(MagioEnigma plugin, ItemSecurityManager itemManager, LargeStackSecurityManager largeStackManager) {
         this.plugin = plugin;
         this.itemManager = itemManager;
+        this.largeStackManager = largeStackManager;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        itemManager.checkAndSanitizePlayer(event.getPlayer());
+        if (!itemManager.checkAndSanitizePlayer(event.getPlayer())) {
+            if (largeStackManager != null) {
+                largeStackManager.checkAndEnforcePlayer(event.getPlayer());
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -44,6 +50,13 @@ public class BannedItemListener implements Listener {
             event.setCancelled(true);
             itemEntity.remove();
             itemManager.checkAndSanitizePlayer(player);
+            return;
+        }
+
+        if (largeStackManager != null && largeStackManager.isMonitoredItem(stack)) {
+            plugin.getServer().getScheduler().runTask(plugin, () -> {
+                largeStackManager.checkAndEnforcePlayer(player);
+            });
         }
     }
 
@@ -63,6 +76,13 @@ public class BannedItemListener implements Listener {
         if (currentBanned || cursorBanned) {
             event.setCancelled(true);
             itemManager.checkAndSanitizePlayer(player);
+            return;
+        }
+
+        if (largeStackManager != null) {
+            plugin.getServer().getScheduler().runTask(plugin, () -> {
+                largeStackManager.checkAndEnforcePlayer(player);
+            });
         }
     }
 
@@ -79,13 +99,24 @@ public class BannedItemListener implements Listener {
         if (itemManager.isBannedItem(event.getOldCursor())) {
             event.setCancelled(true);
             itemManager.checkAndSanitizePlayer(player);
+            return;
+        }
+
+        if (largeStackManager != null) {
+            plugin.getServer().getScheduler().runTask(plugin, () -> {
+                largeStackManager.checkAndEnforcePlayer(player);
+            });
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onItemHeldChange(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
-        itemManager.checkAndSanitizePlayer(player);
+        if (!itemManager.checkAndSanitizePlayer(player)) {
+            if (largeStackManager != null) {
+                largeStackManager.checkAndEnforcePlayer(player);
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
